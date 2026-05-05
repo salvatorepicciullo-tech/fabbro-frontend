@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
+const API = "https://fabbro-app.onrender.com";
+
 export default function Home() {
   const [description, setDescription] = useState("");
   const [items, setItems] = useState([]);
@@ -19,7 +21,7 @@ export default function Home() {
   // 🔥 CARICA MATERIALI
   useEffect(() => {
     axios
-      .get("http://localhost:3001/price-items")
+      .get(`${API}/price-items`)
       .then((res) => setPresetItems(res.data))
       .catch((err) => console.error(err));
   }, []);
@@ -49,7 +51,7 @@ export default function Home() {
   // 💾 SALVA
   const saveQuote = async () => {
     try {
-      await axios.post("http://localhost:3001/quotes", {
+      await axios.post(`${API}/quotes`, {
         client,
         items,
         ivaRate: iva,
@@ -58,7 +60,7 @@ export default function Home() {
 
       alert("✅ Preventivo salvato!");
 
-      // 🔥 RESET COMPLETO CORRETTO
+      // RESET
       setItems([]);
       setDescription("");
       setClient({
@@ -77,7 +79,6 @@ export default function Home() {
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white shadow rounded mt-6">
 
-      {/* TITOLO */}
       <h1 className="text-2xl font-bold mb-4">
         🔧 Preventivo Fabbro
       </h1>
@@ -133,7 +134,7 @@ export default function Home() {
         />
 
         <textarea
-          placeholder="Descrizione lavoro (es: Cancello ferro zincato con installazione)"
+          placeholder="Descrizione lavoro"
           className="border p-2 w-full"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
@@ -150,10 +151,8 @@ export default function Home() {
 
       {/* RIGHE */}
       {items.map((item, i) => (
-        <div
-          key={i}
-          className="flex flex-col md:flex-row gap-2 mb-2"
-        >
+        <div key={i} className="flex flex-col md:flex-row gap-2 mb-2">
+
           <select
             className="border p-2 w-full"
             onChange={(e) => {
@@ -177,7 +176,6 @@ export default function Home() {
 
           <input
             type="number"
-            placeholder="Qta"
             className="border p-2 w-full md:w-24"
             value={item.qty}
             onChange={(e) =>
@@ -187,7 +185,6 @@ export default function Home() {
 
           <input
             type="number"
-            placeholder="Prezzo"
             className="border p-2 w-full md:w-28"
             value={item.price}
             onChange={(e) =>
