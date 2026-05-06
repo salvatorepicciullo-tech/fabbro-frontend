@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function SettingsPage() {
 
@@ -15,6 +15,19 @@ export default function SettingsPage() {
     iban: ""
   });
 
+  // 🔥 CARICA DATI SALVATI
+  useEffect(() => {
+
+    const saved =
+      localStorage.getItem("companyData");
+
+    if (saved) {
+      setCompany(JSON.parse(saved));
+    }
+
+  }, []);
+
+  // 💾 SALVA
   const saveSettings = () => {
 
     localStorage.setItem(
@@ -22,41 +35,84 @@ export default function SettingsPage() {
       JSON.stringify(company)
     );
 
-    alert("✅ Dati ditta salvati!");
+    alert("✅ Dati azienda salvati!");
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-slate-100 p-4">
 
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-5xl mx-auto">
 
-        <div className="bg-white rounded-3xl shadow-lg p-6">
+        {/* HEADER */}
+        <div className="bg-white rounded-3xl shadow-lg p-5 mb-5">
 
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-            <img
-              src="/logo.png?v=1"
-              alt="Logo"
-              className="w-20 h-20 object-contain"
-            />
+            {/* LOGO */}
+            <div className="flex items-center gap-4">
 
-            <div>
-              <h1 className="text-3xl font-black">
-                Dati Azienda
-              </h1>
+              <img
+                src="/logo.png?v=2"
+                alt="Logo"
+                className="w-20 h-20 object-contain"
+              />
 
-              <p className="text-gray-500">
-                Configurazione intestazione preventivi
-              </p>
+              <div>
+
+                <h1 className="text-3xl md:text-4xl font-black text-slate-800">
+                  Dati Azienda
+                </h1>
+
+                <p className="text-slate-500">
+                  Configurazione intestazione preventivi
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* MENU */}
+            <div className="flex gap-2 flex-wrap">
+
+              <a
+                href="/"
+                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
+              >
+                🏠 Menu
+              </a>
+
+              <a
+                href="/quotes"
+                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
+              >
+                📊 Preventivi
+              </a>
+
+              <a
+                href="/materials"
+                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
+              >
+                ⚙️ Materiali
+              </a>
+
             </div>
 
           </div>
+
+        </div>
+
+        {/* CARD */}
+        <div className="bg-white rounded-3xl shadow-lg p-6">
+
+          <h2 className="text-2xl font-bold mb-6">
+            🏢 Informazioni Azienda
+          </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <input
               placeholder="Nome azienda"
-              className="border p-3 rounded-xl"
+              className="border p-4 rounded-2xl"
               value={company.name}
               onChange={(e) =>
                 setCompany({
@@ -68,7 +124,7 @@ export default function SettingsPage() {
 
             <input
               placeholder="Titolare"
-              className="border p-3 rounded-xl"
+              className="border p-4 rounded-2xl"
               value={company.owner}
               onChange={(e) =>
                 setCompany({
@@ -80,7 +136,7 @@ export default function SettingsPage() {
 
             <input
               placeholder="Partita IVA"
-              className="border p-3 rounded-xl"
+              className="border p-4 rounded-2xl"
               value={company.vat}
               onChange={(e) =>
                 setCompany({
@@ -92,7 +148,7 @@ export default function SettingsPage() {
 
             <input
               placeholder="Telefono"
-              className="border p-3 rounded-xl"
+              className="border p-4 rounded-2xl"
               value={company.phone}
               onChange={(e) =>
                 setCompany({
@@ -104,7 +160,7 @@ export default function SettingsPage() {
 
             <input
               placeholder="Email"
-              className="border p-3 rounded-xl"
+              className="border p-4 rounded-2xl"
               value={company.email}
               onChange={(e) =>
                 setCompany({
@@ -116,7 +172,7 @@ export default function SettingsPage() {
 
             <input
               placeholder="IBAN"
-              className="border p-3 rounded-xl"
+              className="border p-4 rounded-2xl"
               value={company.iban}
               onChange={(e) =>
                 setCompany({
@@ -130,7 +186,7 @@ export default function SettingsPage() {
 
           <textarea
             placeholder="Indirizzo completo"
-            className="border p-3 rounded-xl w-full mt-4"
+            className="border p-4 rounded-2xl w-full mt-4"
             value={company.address}
             onChange={(e) =>
               setCompany({
@@ -142,7 +198,7 @@ export default function SettingsPage() {
 
           <input
             placeholder="Città"
-            className="border p-3 rounded-xl w-full mt-4"
+            className="border p-4 rounded-2xl w-full mt-4"
             value={company.city}
             onChange={(e) =>
               setCompany({
@@ -152,9 +208,10 @@ export default function SettingsPage() {
             }
           />
 
+          {/* SAVE */}
           <button
             onClick={saveSettings}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white p-4 rounded-2xl mt-6 text-lg font-bold"
+            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white p-5 rounded-2xl mt-6 text-xl font-bold"
           >
             💾 Salva Dati Azienda
           </button>
