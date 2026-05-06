@@ -269,7 +269,12 @@ export default function QuotesPage() {
 
               {/* BOTTONI */}
               <div className="flex gap-2 mt-5 flex-wrap">
-
+<a
+  href={`/?edit=${q.id}`}
+  className="bg-orange-500 hover:bg-orange-600 transition text-white px-4 py-3 rounded-xl font-medium"
+>
+  ✏️ Modifica
+</a>
                 {/* PDF */}
                 <a
                   href={`${API}/quotes/${q.id}/pdf`}
