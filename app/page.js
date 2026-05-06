@@ -131,32 +131,61 @@ export default function Home() {
 
       <div className="max-w-5xl mx-auto">
 
-        {/* HEADER */}
-        <div className="bg-white rounded-2xl shadow p-4 mb-4">
+  {/* HEADER */}
+<div className="bg-white rounded-3xl shadow-lg p-5 mb-5">
 
-          <h1 className="text-3xl font-bold mb-3">
-            🔧 Preventivo Fabbro
-          </h1>
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-          <div className="flex gap-2 flex-wrap">
+    {/* LOGO + TITOLO */}
+    <div className="flex items-center gap-4">
 
-            <a
-              href="/quotes"
-              className="bg-gray-200 px-4 py-2 rounded-lg"
-            >
-              📊 Preventivi
-            </a>
+      <img
+        src="/logo.png"
+        alt="Logo"
+        className="w-20 h-20 object-contain"
+      />
 
-            <a
-              href="/materials"
-              className="bg-gray-200 px-4 py-2 rounded-lg"
-            >
-              ⚙️ Materiali
-            </a>
+      <div>
+        <h1 className="text-3xl md:text-4xl font-black text-slate-800">
+          Preventivo Fabbro
+        </h1>
 
-          </div>
+        <p className="text-slate-500 text-sm">
+          Gestionale Officina Meccanica
+        </p>
+      </div>
 
-        </div>
+    </div>
+
+    {/* MENU */}
+    <div className="flex gap-2 flex-wrap">
+
+      <a
+        href="/quotes"
+        className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
+      >
+        📊 Preventivi
+      </a>
+
+      <a
+        href="/materials"
+        className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
+      >
+        ⚙️ Materiali
+      </a>
+
+      <a
+        href="/settings"
+        className="bg-blue-600 hover:bg-blue-700 text-white transition px-4 py-3 rounded-xl font-medium"
+      >
+        🏢 Ditta
+      </a>
+
+    </div>
+
+  </div>
+
+</div>
 
         {/* CLIENTE */}
         <div className="bg-white rounded-2xl shadow p-4 mb-4">
