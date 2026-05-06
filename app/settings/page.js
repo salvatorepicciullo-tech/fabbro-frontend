@@ -1,134 +1,120 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+const API = "https://fabbro-app.onrender.com";
 
 export default function SettingsPage() {
 
-  const [company, setCompany] = useState({
-    name: "",
+  const [data, setData] = useState({
+    companyName: "",
     owner: "",
     vat: "",
-    address: "",
-    city: "",
+    sdi: "",
+    pec: "",
     phone: "",
     email: "",
-    iban: ""
+    iban: "",
+    address: "",
+    city: ""
   });
 
-  // 🔥 CARICA DATI SALVATI
+  // LOAD
   useEffect(() => {
-
-    const saved =
-      localStorage.getItem("companyData");
-
-    if (saved) {
-      setCompany(JSON.parse(saved));
-    }
-
+    axios
+      .get(`${API}/settings`)
+      .then((res) => {
+        if (res.data) {
+          setData(res.data);
+        }
+      })
+      .catch((err) => console.log(err));
   }, []);
 
-  // 💾 SALVA
-  const saveSettings = () => {
+  // SAVE
+  const saveData = async () => {
 
-    localStorage.setItem(
-      "companyData",
-      JSON.stringify(company)
-    );
+    try {
 
-    alert("✅ Dati azienda salvati!");
+      await axios.post(
+        `${API}/settings`,
+        data
+      );
+
+      alert("✅ Dati azienda salvati");
+
+    } catch (err) {
+      console.log(err);
+      alert("❌ Errore salvataggio");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 p-4">
+    <div className="min-h-screen bg-gray-100 p-4">
 
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-4xl mx-auto">
 
-        {/* HEADER */}
-        <div className="bg-white rounded-3xl shadow-lg p-5 mb-5">
+        {/* TOP */}
+        <div className="bg-white rounded-3xl shadow p-6 mb-4">
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex items-center justify-between">
 
-            {/* LOGO */}
             <div className="flex items-center gap-4">
 
               <img
-                src="/logo.png?v=2"
+                src="/logo.png"
                 alt="Logo"
                 className="w-20 h-20 object-contain"
               />
 
               <div>
-
-                <h1 className="text-3xl md:text-4xl font-black text-slate-800">
-                  Dati Azienda
+                <h1 className="text-4xl font-black">
+                  🏢 Dati Azienda
                 </h1>
 
-                <p className="text-slate-500">
+                <p className="text-gray-500">
                   Configurazione intestazione preventivi
                 </p>
-
               </div>
 
             </div>
 
-            {/* MENU */}
-            <div className="flex gap-2 flex-wrap">
-
-              <a
-                href="/"
-                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
-              >
-                🏠 Menu
-              </a>
-
-              <a
-                href="/quotes"
-                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
-              >
-                📊 Preventivi
-              </a>
-
-              <a
-                href="/materials"
-                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
-              >
-                ⚙️ Materiali
-              </a>
-
-            </div>
+            <a
+              href="/"
+              className="bg-gray-200 px-4 py-3 rounded-xl font-bold"
+            >
+              ← Menu
+            </a>
 
           </div>
 
         </div>
 
-        {/* CARD */}
-        <div className="bg-white rounded-3xl shadow-lg p-6">
-
-          <h2 className="text-2xl font-bold mb-6">
-            🏢 Informazioni Azienda
-          </h2>
+        {/* FORM */}
+        <div className="bg-white rounded-3xl shadow p-6">
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             <input
               placeholder="Nome azienda"
-              className="border p-4 rounded-2xl"
-              value={company.name}
+              className="border p-3 rounded-xl"
+              value={data.companyName}
               onChange={(e) =>
-                setCompany({
-                  ...company,
-                  name: e.target.value
+                setData({
+                  ...data,
+                  companyName: e.target.value
                 })
               }
             />
 
             <input
               placeholder="Titolare"
-              className="border p-4 rounded-2xl"
-              value={company.owner}
+              className="border p-3 rounded-xl"
+              value={data.owner}
               onChange={(e) =>
-                setCompany({
-                  ...company,
+                setData({
+                  ...data,
                   owner: e.target.value
                 })
               }
@@ -136,23 +122,47 @@ export default function SettingsPage() {
 
             <input
               placeholder="Partita IVA"
-              className="border p-4 rounded-2xl"
-              value={company.vat}
+              className="border p-3 rounded-xl"
+              value={data.vat}
               onChange={(e) =>
-                setCompany({
-                  ...company,
+                setData({
+                  ...data,
                   vat: e.target.value
                 })
               }
             />
 
             <input
-              placeholder="Telefono"
-              className="border p-4 rounded-2xl"
-              value={company.phone}
+              placeholder="Codice SDI"
+              className="border p-3 rounded-xl"
+              value={data.sdi}
               onChange={(e) =>
-                setCompany({
-                  ...company,
+                setData({
+                  ...data,
+                  sdi: e.target.value
+                })
+              }
+            />
+
+            <input
+              placeholder="PEC"
+              className="border p-3 rounded-xl"
+              value={data.pec}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  pec: e.target.value
+                })
+              }
+            />
+
+            <input
+              placeholder="Telefono"
+              className="border p-3 rounded-xl"
+              value={data.phone}
+              onChange={(e) =>
+                setData({
+                  ...data,
                   phone: e.target.value
                 })
               }
@@ -160,11 +170,11 @@ export default function SettingsPage() {
 
             <input
               placeholder="Email"
-              className="border p-4 rounded-2xl"
-              value={company.email}
+              className="border p-3 rounded-xl"
+              value={data.email}
               onChange={(e) =>
-                setCompany({
-                  ...company,
+                setData({
+                  ...data,
                   email: e.target.value
                 })
               }
@@ -172,11 +182,11 @@ export default function SettingsPage() {
 
             <input
               placeholder="IBAN"
-              className="border p-4 rounded-2xl"
-              value={company.iban}
+              className="border p-3 rounded-xl"
+              value={data.iban}
               onChange={(e) =>
-                setCompany({
-                  ...company,
+                setData({
+                  ...data,
                   iban: e.target.value
                 })
               }
@@ -184,13 +194,13 @@ export default function SettingsPage() {
 
           </div>
 
-          <textarea
-            placeholder="Indirizzo completo"
-            className="border p-4 rounded-2xl w-full mt-4"
-            value={company.address}
+          <input
+            placeholder="Indirizzo"
+            className="border p-3 rounded-xl w-full mt-4"
+            value={data.address}
             onChange={(e) =>
-              setCompany({
-                ...company,
+              setData({
+                ...data,
                 address: e.target.value
               })
             }
@@ -198,20 +208,19 @@ export default function SettingsPage() {
 
           <input
             placeholder="Città"
-            className="border p-4 rounded-2xl w-full mt-4"
-            value={company.city}
+            className="border p-3 rounded-xl w-full mt-4"
+            value={data.city}
             onChange={(e) =>
-              setCompany({
-                ...company,
+              setData({
+                ...data,
                 city: e.target.value
               })
             }
           />
 
-          {/* SAVE */}
           <button
-            onClick={saveSettings}
-            className="w-full bg-blue-600 hover:bg-blue-700 transition text-white p-5 rounded-2xl mt-6 text-xl font-bold"
+            onClick={saveData}
+            className="w-full mt-6 bg-blue-600 text-white p-4 rounded-2xl text-xl font-bold"
           >
             💾 Salva Dati Azienda
           </button>
