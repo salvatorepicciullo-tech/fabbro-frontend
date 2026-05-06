@@ -11,6 +11,7 @@ export default function QuotesPage() {
 
   // 🔥 CARICA
   const loadQuotes = () => {
+
     axios
       .get(`${API}/quotes`)
       .then((res) => setQuotes(res.data))
@@ -43,132 +44,75 @@ export default function QuotesPage() {
     }
   };
 
-  // 📄 PDF
-  const printQuote = (q) => {
-
-    const html = `
-      <html>
-      <head>
-        <title>Preventivo</title>
-
-        <style>
-          body {
-            font-family: Arial;
-            padding: 30px;
-          }
-
-          h1 {
-            margin-bottom: 20px;
-          }
-
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-          }
-
-          td, th {
-            border: 1px solid #ccc;
-            padding: 10px;
-          }
-
-          .total {
-            margin-top: 20px;
-            font-size: 22px;
-            font-weight: bold;
-          }
-        </style>
-      </head>
-
-      <body>
-
-        <h1>Preventivo</h1>
-
-        <h3>${q.client?.name}</h3>
-
-        <p>
-          ${q.client?.phone || ""}
-          <br/>
-          ${q.client?.email || ""}
-          <br/>
-          ${q.client?.address || ""}
-        </p>
-
-        <p>
-          ${q.description || ""}
-        </p>
-
-        <table>
-
-          <thead>
-            <tr>
-              <th>Descrizione</th>
-              <th>Qta</th>
-              <th>Prezzo</th>
-              <th>Totale</th>
-            </tr>
-          </thead>
-
-          <tbody>
-
-            ${q.items.map(item => `
-              <tr>
-                <td>${item.name}</td>
-                <td>${item.qty}</td>
-                <td>€ ${item.price}</td>
-                <td>€ ${item.total}</td>
-              </tr>
-            `).join("")}
-
-          </tbody>
-
-        </table>
-
-        <div class="total">
-          Totale: € ${q.total.toFixed(2)}
-        </div>
-
-      </body>
-      </html>
-    `;
-
-    const win = window.open("", "_blank");
-
-    win.document.write(html);
-
-    win.document.close();
-
-    win.print();
-  };
-
   return (
 
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-slate-100 p-4">
 
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
 
         {/* HEADER */}
-        <div className="bg-white shadow rounded-2xl p-4 mb-4 flex items-center justify-between">
+        <div className="bg-white shadow-lg rounded-3xl p-5 mb-5">
 
-          <h1 className="text-3xl font-bold">
-            📊 Preventivi
-          </h1>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-          <a
-            href="/"
-            className="bg-gray-200 px-4 py-2 rounded-lg"
-          >
-            ← Home
-          </a>
+            <div className="flex items-center gap-4">
+
+              <img
+                src="/logo.png?v=1"
+                alt="Logo"
+                className="w-16 h-16 object-contain"
+              />
+
+              <div>
+
+                <h1 className="text-4xl font-black text-slate-800">
+                  📊 Preventivi
+                </h1>
+
+                <p className="text-slate-500">
+                  Gestione preventivi officina
+                </p>
+
+              </div>
+
+            </div>
+
+            {/* MENU */}
+            <div className="flex gap-2 flex-wrap">
+
+              <a
+                href="/"
+                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
+              >
+                🏠 Home
+              </a>
+
+              <a
+                href="/materials"
+                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
+              >
+                ⚙️ Materiali
+              </a>
+
+              <a
+                href="/settings"
+                className="bg-blue-600 hover:bg-blue-700 text-white transition px-4 py-3 rounded-xl font-medium"
+              >
+                🏢 Ditta
+              </a>
+
+            </div>
+
+          </div>
 
         </div>
 
         {/* LISTA */}
-        <div className="space-y-4">
+        <div className="space-y-5">
 
           {quotes.length === 0 && (
 
-            <div className="bg-white rounded-2xl p-4 shadow">
+            <div className="bg-white rounded-3xl p-6 shadow">
               Nessun preventivo salvato
             </div>
 
@@ -178,41 +122,70 @@ export default function QuotesPage() {
 
             <div
               key={q.id}
-              className="bg-white rounded-2xl shadow p-4"
+              className="bg-white rounded-3xl shadow-lg p-5"
             >
 
               {/* TOP */}
-              <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3">
+              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
 
+                {/* CLIENTE */}
                 <div>
 
-                  <div className="text-xl font-bold">
-                    {q.client?.name}
+                  <div className="text-2xl font-bold text-slate-800">
+                    {q.client?.companyName ||
+                      q.client?.name ||
+                      "Cliente"}
                   </div>
 
-                  <div className="text-gray-500 text-sm">
-                    {q.client?.phone}
-                  </div>
+                  {q.client?.contactName && (
+                    <div className="text-slate-500">
+                      Referente:
+                      {" "}
+                      {q.client.contactName}
+                    </div>
+                  )}
 
-                  <div className="text-gray-500 text-sm">
-                    {q.client?.email}
-                  </div>
+                  {q.client?.vat && (
+                    <div className="text-slate-500 text-sm">
+                      P.IVA:
+                      {" "}
+                      {q.client.vat}
+                    </div>
+                  )}
 
-                  <div className="text-gray-500 text-sm">
-                    {q.client?.address}
-                  </div>
+                  {q.client?.phone && (
+                    <div className="text-slate-500 text-sm">
+                      {q.client.phone}
+                    </div>
+                  )}
+
+                  {q.client?.email && (
+                    <div className="text-slate-500 text-sm">
+                      {q.client.email}
+                    </div>
+                  )}
+
+                  {q.client?.address && (
+                    <div className="text-slate-500 text-sm">
+                      {q.client.address}
+                    </div>
+                  )}
 
                 </div>
 
+                {/* TOTALE */}
                 <div className="text-right">
 
-                  <div className="text-2xl font-bold">
-                    € {Number(q.total).toFixed(2)}
+                  <div className="text-3xl font-black text-slate-800">
+                    €
+                    {" "}
+                    {Number(q.total).toFixed(2)}
                   </div>
 
-                  <div className="text-sm text-gray-500">
-                    {new Date(q.createdAt)
-                      .toLocaleDateString()}
+                  <div className="text-slate-500 text-sm">
+                    {new Date(
+                      q.createdAt
+                    ).toLocaleDateString()}
                   </div>
 
                 </div>
@@ -222,30 +195,33 @@ export default function QuotesPage() {
               {/* DESCRIZIONE */}
               {q.description && (
 
-                <div className="mt-4 bg-gray-50 p-3 rounded-xl text-gray-700">
+                <div className="mt-5 bg-slate-50 rounded-2xl p-4 text-slate-700">
                   {q.description}
                 </div>
 
               )}
 
-              {/* RIGHE */}
-              <div className="mt-4 space-y-2">
+              {/* MATERIALI */}
+              <div className="mt-5 space-y-2">
 
                 {q.items?.map((item) => (
 
                   <div
                     key={item.id}
-                    className="flex justify-between border-b pb-2 text-sm"
+                    className="flex justify-between border-b border-slate-100 pb-2 text-sm"
                   >
 
                     <div>
                       {item.name}
                       {" "}
-                      ({item.qty} x €{item.price})
+                      ({item.qty} x €
+                      {item.price})
                     </div>
 
-                    <div>
-                      € {Number(item.total).toFixed(2)}
+                    <div className="font-semibold">
+                      €
+                      {" "}
+                      {Number(item.total).toFixed(2)}
                     </div>
 
                   </div>
@@ -255,44 +231,58 @@ export default function QuotesPage() {
               </div>
 
               {/* TOTALI */}
-              <div className="mt-4 border-t pt-3 text-sm text-gray-600 space-y-1">
+              <div className="mt-5 border-t pt-4 space-y-2 text-sm">
 
-                <div className="flex justify-between">
+                <div className="flex justify-between text-slate-600">
                   <span>Subtotale</span>
+
                   <span>
-                    € {Number(q.subtotal).toFixed(2)}
+                    €
+                    {" "}
+                    {Number(q.subtotal).toFixed(2)}
                   </span>
                 </div>
 
-                <div className="flex justify-between">
+                <div className="flex justify-between text-slate-600">
                   <span>IVA</span>
+
                   <span>
-                    € {Number(q.ivaAmount).toFixed(2)}
+                    €
+                    {" "}
+                    {Number(q.ivaAmount).toFixed(2)}
                   </span>
                 </div>
 
-                <div className="flex justify-between font-bold text-lg text-black">
+                <div className="flex justify-between text-2xl font-black text-slate-800 border-t pt-3">
+
                   <span>Totale</span>
+
                   <span>
-                    € {Number(q.total).toFixed(2)}
+                    €
+                    {" "}
+                    {Number(q.total).toFixed(2)}
                   </span>
+
                 </div>
 
               </div>
 
               {/* BOTTONI */}
-              <div className="flex gap-2 mt-4 flex-wrap">
+              <div className="flex gap-2 mt-5 flex-wrap">
 
-                <button
-                  onClick={() => printQuote(q)}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+                {/* PDF */}
+                <a
+                  href={`${API}/quotes/${q.id}/pdf`}
+                  target="_blank"
+                  className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-3 rounded-xl font-medium"
                 >
                   📄 PDF
-                </button>
+                </a>
 
+                {/* ELIMINA */}
                 <button
                   onClick={() => deleteQuote(q.id)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg"
+                  className="bg-red-500 hover:bg-red-600 transition text-white px-4 py-3 rounded-xl font-medium"
                 >
                   ❌ Elimina
                 </button>
