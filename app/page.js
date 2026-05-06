@@ -237,15 +237,31 @@ export default function Home() {
 
       } else {
 
-        await axios.post(
-          `${API}/quotes`,
-          {
-            client,
-            items,
-            ivaRate: iva,
-            description
-          }
-        );
+     const cleanClient = {
+  name: client.name,
+  companyName: client.companyName,
+  contactName: client.contactName,
+
+  vat: client.vat,
+  fiscalCode: client.fiscalCode,
+
+  sdi: client.sdi,
+  pec: client.pec,
+
+  phone: client.phone,
+  email: client.email,
+  address: client.address
+};
+
+await axios.post(
+  `${API}/quotes`,
+  {
+    client: cleanClient,
+    items,
+    ivaRate: iva,
+    description
+  }
+);
 
         alert(
           "✅ Preventivo salvato!"
