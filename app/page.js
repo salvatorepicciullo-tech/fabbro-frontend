@@ -1,55 +1,89 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
 const API = "https://fabbro-app.onrender.com";
 
 export default function Home() {
 
-  const searchParams = useSearchParams();
+  const [editId, setEditId] =
+    useState(null);
 
-  const editId =
-    searchParams.get("edit");
+  const [description, setDescription] =
+    useState("");
 
-  const [description, setDescription] = useState("");
-  const [items, setItems] = useState([]);
-  const [presetItems, setPresetItems] = useState([]);
-  const [iva, setIva] = useState(22);
-  const [loading, setLoading] = useState(false);
+  const [items, setItems] =
+    useState([]);
 
-  const [client, setClient] = useState({
-    id: null,
+  const [presetItems, setPresetItems] =
+    useState([]);
 
-    // PRIVATO / AZIENDA
-    name: "",
-    companyName: "",
-    contactName: "",
+  const [iva, setIva] =
+    useState(22);
 
-    vat: "",
-    fiscalCode: "",
+  const [loading, setLoading] =
+    useState(false);
 
-    sdi: "",
-    pec: "",
+  const [client, setClient] =
+    useState({
+      id: null,
 
-    phone: "",
-    email: "",
+      // PRIVATO / AZIENDA
+      name: "",
+      companyName: "",
+      contactName: "",
 
-    address: ""
-  });
+      vat: "",
+      fiscalCode: "",
 
-  // 🔥 CARICA MATERIALI
+      sdi: "",
+      pec: "",
+
+      phone: "",
+      email: "",
+
+      address: ""
+    });
+
+  // =========================
+  // URL EDIT
+  // =========================
+
+  useEffect(() => {
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    setEditId(
+      params.get("edit")
+    );
+
+  }, []);
+
+  // =========================
+  // MATERIALI
+  // =========================
+
   useEffect(() => {
 
     axios
       .get(`${API}/price-items`)
-      .then((res) => setPresetItems(res.data))
-      .catch((err) => console.error(err));
+      .then((res) =>
+        setPresetItems(res.data)
+      )
+      .catch((err) =>
+        console.error(err)
+      );
 
   }, []);
 
-  // 🔥 CARICA PREVENTIVO IN MODIFICA
+  // =========================
+  // LOAD QUOTE
+  // =========================
+
   useEffect(() => {
 
     if (!editId) return;
@@ -65,7 +99,9 @@ export default function Home() {
 
         if (!quote) return;
 
-        setClient(quote.client);
+        setClient({
+          ...quote.client
+        });
 
         setItems(
           quote.items.map((i) => ({
@@ -84,7 +120,10 @@ export default function Home() {
 
   }, [editId]);
 
-  // ➕ AGGIUNGI RIGA
+  // =========================
+  // ADD ITEM
+  // =========================
+
   const addItem = () => {
 
     setItems([
@@ -99,7 +138,10 @@ export default function Home() {
     ]);
   };
 
-  // ✏️ UPDATE RIGA
+  // =========================
+  // UPDATE ITEM
+  // =========================
+
   const updateItem = (
     index,
     field,
@@ -117,7 +159,10 @@ export default function Home() {
     setItems(newItems);
   };
 
-  // ❌ ELIMINA RIGA
+  // =========================
+  // REMOVE ITEM
+  // =========================
+
   const removeItem = (index) => {
 
     const newItems = [...items];
@@ -127,7 +172,10 @@ export default function Home() {
     setItems(newItems);
   };
 
-  // 💰 TOTALI
+  // =========================
+  // TOTALI
+  // =========================
+
   const subtotal = items.reduce(
     (acc, i) =>
       acc + Number(i.total || 0),
@@ -140,7 +188,10 @@ export default function Home() {
   const total =
     subtotal + ivaAmount;
 
-  // 💾 SALVA
+  // =========================
+  // SAVE QUOTE
+  // =========================
+
   const saveQuote = async () => {
 
     if (
@@ -202,6 +253,7 @@ export default function Home() {
       }
 
       // RESET
+
       setItems([]);
 
       setDescription("");
@@ -244,11 +296,13 @@ export default function Home() {
       <div className="max-w-5xl mx-auto">
 
         {/* HEADER */}
+
         <div className="bg-white rounded-3xl shadow-lg p-5 mb-5">
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
             {/* LOGO */}
+
             <div className="flex items-center gap-4">
 
               <img
@@ -260,9 +314,11 @@ export default function Home() {
               <div>
 
                 <h1 className="text-3xl md:text-4xl font-black text-slate-800">
+
                   {editId
                     ? "✏️ Modifica Preventivo"
                     : "Preventivo Fabbro"}
+
                 </h1>
 
                 <p className="text-slate-500 text-sm">
@@ -274,6 +330,7 @@ export default function Home() {
             </div>
 
             {/* MENU */}
+
             <div className="flex gap-2 flex-wrap">
 
               <a
@@ -303,149 +360,151 @@ export default function Home() {
 
         </div>
 
-      {/* CLIENTE */}
-<div className="bg-white rounded-2xl shadow p-4 mb-4">
+        {/* CLIENTE */}
 
-  <h2 className="font-bold text-xl mb-3">
-    👤 Cliente / Azienda
-  </h2>
+        <div className="bg-white rounded-2xl shadow p-4 mb-4">
 
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <h2 className="font-bold text-xl mb-3">
+            👤 Cliente / Azienda
+          </h2>
 
-    <input
-      placeholder="Nome cliente"
-      className="border p-3 rounded-lg"
-      value={client.name}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          name: e.target.value
-        })
-      }
-    />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-    <input
-      placeholder="Ragione Sociale"
-      className="border p-3 rounded-lg"
-      value={client.companyName || ""}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          companyName: e.target.value
-        })
-      }
-    />
+            <input
+              placeholder="Nome cliente"
+              className="border p-3 rounded-lg"
+              value={client.name}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  name: e.target.value
+                })
+              }
+            />
 
-    <input
-      placeholder="Referente"
-      className="border p-3 rounded-lg"
-      value={client.contactName || ""}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          contactName: e.target.value
-        })
-      }
-    />
+            <input
+              placeholder="Ragione Sociale"
+              className="border p-3 rounded-lg"
+              value={client.companyName || ""}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  companyName: e.target.value
+                })
+              }
+            />
 
-    <input
-      placeholder="Telefono"
-      className="border p-3 rounded-lg"
-      value={client.phone}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          phone: e.target.value
-        })
-      }
-    />
+            <input
+              placeholder="Referente"
+              className="border p-3 rounded-lg"
+              value={client.contactName || ""}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  contactName: e.target.value
+                })
+              }
+            />
 
-    <input
-      placeholder="Email"
-      className="border p-3 rounded-lg"
-      value={client.email}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          email: e.target.value
-        })
-      }
-    />
+            <input
+              placeholder="Telefono"
+              className="border p-3 rounded-lg"
+              value={client.phone}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  phone: e.target.value
+                })
+              }
+            />
 
-    <input
-      placeholder="Indirizzo"
-      className="border p-3 rounded-lg"
-      value={client.address}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          address: e.target.value
-        })
-      }
-    />
+            <input
+              placeholder="Email"
+              className="border p-3 rounded-lg"
+              value={client.email}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  email: e.target.value
+                })
+              }
+            />
 
-    <input
-      placeholder="Partita IVA"
-      className="border p-3 rounded-lg"
-      value={client.vat || ""}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          vat: e.target.value
-        })
-      }
-    />
+            <input
+              placeholder="Indirizzo"
+              className="border p-3 rounded-lg"
+              value={client.address}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  address: e.target.value
+                })
+              }
+            />
 
-    <input
-      placeholder="Codice Fiscale"
-      className="border p-3 rounded-lg"
-      value={client.fiscalCode || ""}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          fiscalCode: e.target.value
-        })
-      }
-    />
+            <input
+              placeholder="Partita IVA"
+              className="border p-3 rounded-lg"
+              value={client.vat || ""}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  vat: e.target.value
+                })
+              }
+            />
 
-    <input
-      placeholder="Codice SDI"
-      className="border p-3 rounded-lg"
-      value={client.sdi || ""}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          sdi: e.target.value
-        })
-      }
-    />
+            <input
+              placeholder="Codice Fiscale"
+              className="border p-3 rounded-lg"
+              value={client.fiscalCode || ""}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  fiscalCode: e.target.value
+                })
+              }
+            />
 
-    <input
-      placeholder="PEC"
-      className="border p-3 rounded-lg"
-      value={client.pec || ""}
-      onChange={(e) =>
-        setClient({
-          ...client,
-          pec: e.target.value
-        })
-      }
-    />
+            <input
+              placeholder="Codice SDI"
+              className="border p-3 rounded-lg"
+              value={client.sdi || ""}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  sdi: e.target.value
+                })
+              }
+            />
 
-  </div>
+            <input
+              placeholder="PEC"
+              className="border p-3 rounded-lg"
+              value={client.pec || ""}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  pec: e.target.value
+                })
+              }
+            />
 
-  <textarea
-    placeholder="Descrizione lavoro"
-    className="border p-3 rounded-lg w-full mt-3"
-    value={description}
-    onChange={(e) =>
-      setDescription(e.target.value)
-    }
-  />
+          </div>
 
-</div>
+          <textarea
+            placeholder="Descrizione lavoro"
+            className="border p-3 rounded-lg w-full mt-3"
+            value={description}
+            onChange={(e) =>
+              setDescription(e.target.value)
+            }
+          />
+
+        </div>
 
         {/* MATERIALI */}
+
         <div className="bg-white rounded-2xl shadow p-4 mb-4">
 
           <div className="flex items-center justify-between mb-4">
@@ -474,7 +533,6 @@ export default function Home() {
 
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
 
-                  {/* SELECT */}
                   <select
                     className="border p-3 rounded-lg"
                     onChange={(e) => {
@@ -522,7 +580,6 @@ export default function Home() {
 
                   </select>
 
-                  {/* QTA */}
                   <input
                     type="number"
                     placeholder="Quantità"
@@ -537,7 +594,6 @@ export default function Home() {
                     }
                   />
 
-                  {/* PREZZO */}
                   <input
                     type="number"
                     placeholder="Prezzo"
@@ -552,14 +608,14 @@ export default function Home() {
                     }
                   />
 
-                  {/* TOTALE */}
                   <div className="bg-gray-100 rounded-lg p-3 flex items-center justify-center font-bold">
+
                     €
                     {" "}
                     {Number(item.total).toFixed(2)}
+
                   </div>
 
-                  {/* DELETE */}
                   <button
                     onClick={() =>
                       removeItem(i)
@@ -580,6 +636,7 @@ export default function Home() {
         </div>
 
         {/* TOTALI */}
+
         <div className="bg-white rounded-2xl shadow p-4 mb-4">
 
           <h2 className="font-bold text-xl mb-3">
@@ -589,6 +646,7 @@ export default function Home() {
           <div className="space-y-2">
 
             <div className="flex justify-between">
+
               <span>Subtotale</span>
 
               <span>
@@ -596,6 +654,7 @@ export default function Home() {
                 {" "}
                 {subtotal.toFixed(2)}
               </span>
+
             </div>
 
             <div className="flex justify-between items-center">
@@ -657,6 +716,7 @@ export default function Home() {
         </div>
 
         {/* SAVE */}
+
         <button
           onClick={saveQuote}
           disabled={loading}
