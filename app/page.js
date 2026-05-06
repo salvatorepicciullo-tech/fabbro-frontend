@@ -303,155 +303,147 @@ export default function Home() {
 
         </div>
 
-        {/* CLIENTE */}
-        <div className="bg-white rounded-2xl shadow p-4 mb-4">
+      {/* CLIENTE */}
+<div className="bg-white rounded-2xl shadow p-4 mb-4">
 
-          <h2 className="font-bold text-xl mb-3">
-            👤 Cliente / Azienda
-          </h2>
+  <h2 className="font-bold text-xl mb-3">
+    👤 Cliente / Azienda
+  </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
 
-            <input
-              placeholder="Nome cliente"
-              className="border p-3 rounded-lg"
-              value={client.name}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  name: e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="Nome cliente"
+      className="border p-3 rounded-lg"
+      value={client.name}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          name: e.target.value
+        })
+      }
+    />
 
-            <input
-              placeholder="Ragione sociale"
-              className="border p-3 rounded-lg"
-              value={client.companyName}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  companyName:
-                    e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="Ragione Sociale"
+      className="border p-3 rounded-lg"
+      value={client.companyName || ""}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          companyName: e.target.value
+        })
+      }
+    />
 
-            <input
-              placeholder="Referente"
-              className="border p-3 rounded-lg"
-              value={client.contactName}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  contactName:
-                    e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="Referente"
+      className="border p-3 rounded-lg"
+      value={client.contactName || ""}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          contactName: e.target.value
+        })
+      }
+    />
 
-            <input
-              placeholder="Partita IVA"
-              className="border p-3 rounded-lg"
-              value={client.vat}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  vat: e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="Telefono"
+      className="border p-3 rounded-lg"
+      value={client.phone}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          phone: e.target.value
+        })
+      }
+    />
 
-            <input
-              placeholder="Codice Fiscale"
-              className="border p-3 rounded-lg"
-              value={client.fiscalCode}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  fiscalCode:
-                    e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="Email"
+      className="border p-3 rounded-lg"
+      value={client.email}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          email: e.target.value
+        })
+      }
+    />
 
-            <input
-              placeholder="Codice SDI"
-              className="border p-3 rounded-lg"
-              value={client.sdi}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  sdi: e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="Indirizzo"
+      className="border p-3 rounded-lg"
+      value={client.address}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          address: e.target.value
+        })
+      }
+    />
 
-            <input
-              placeholder="PEC"
-              className="border p-3 rounded-lg"
-              value={client.pec}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  pec: e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="Partita IVA"
+      className="border p-3 rounded-lg"
+      value={client.vat || ""}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          vat: e.target.value
+        })
+      }
+    />
 
-            <input
-              placeholder="Telefono"
-              className="border p-3 rounded-lg"
-              value={client.phone}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  phone:
-                    e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="Codice Fiscale"
+      className="border p-3 rounded-lg"
+      value={client.fiscalCode || ""}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          fiscalCode: e.target.value
+        })
+      }
+    />
 
-            <input
-              placeholder="Email"
-              className="border p-3 rounded-lg"
-              value={client.email}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  email:
-                    e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="Codice SDI"
+      className="border p-3 rounded-lg"
+      value={client.sdi || ""}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          sdi: e.target.value
+        })
+      }
+    />
 
-            <input
-              placeholder="Indirizzo"
-              className="border p-3 rounded-lg"
-              value={client.address}
-              onChange={(e) =>
-                setClient({
-                  ...client,
-                  address:
-                    e.target.value
-                })
-              }
-            />
+    <input
+      placeholder="PEC"
+      className="border p-3 rounded-lg"
+      value={client.pec || ""}
+      onChange={(e) =>
+        setClient({
+          ...client,
+          pec: e.target.value
+        })
+      }
+    />
 
-          </div>
+  </div>
 
-          <textarea
-            placeholder="Descrizione lavoro"
-            className="border p-3 rounded-lg w-full mt-3"
-            value={description}
-            onChange={(e) =>
-              setDescription(
-                e.target.value
-              )
-            }
-          />
+  <textarea
+    placeholder="Descrizione lavoro"
+    className="border p-3 rounded-lg w-full mt-3"
+    value={description}
+    onChange={(e) =>
+      setDescription(e.target.value)
+    }
+  />
 
-        </div>
+</div>
 
         {/* MATERIALI */}
         <div className="bg-white rounded-2xl shadow p-4 mb-4">
