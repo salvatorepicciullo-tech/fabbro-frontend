@@ -44,6 +44,324 @@ export default function QuotesPage() {
     }
   };
 
+  // 📄 PDF PROFESSIONALE
+  const printQuote = async (q) => {
+
+    try {
+
+      const settingsRes =
+        await axios.get(
+          `${API}/settings`
+        );
+
+      const s = settingsRes.data;
+
+      const html = `
+        <html>
+
+        <head>
+
+          <title>Preventivo</title>
+
+          <style>
+
+            body{
+              font-family:Arial;
+              padding:40px;
+              color:#222;
+            }
+
+            .top{
+              display:flex;
+              justify-content:space-between;
+              margin-bottom:40px;
+              border-bottom:2px solid #ddd;
+              padding-bottom:20px;
+            }
+
+            .title{
+              font-size:34px;
+              font-weight:bold;
+              color:#0f172a;
+            }
+
+            .subtitle{
+              color:#666;
+              margin-top:5px;
+            }
+
+            .box{
+              border:1px solid #ddd;
+              padding:20px;
+              border-radius:10px;
+              margin-bottom:20px;
+            }
+
+            .section-title{
+              font-size:20px;
+              font-weight:bold;
+              margin-bottom:10px;
+            }
+
+            table{
+              width:100%;
+              border-collapse:collapse;
+              margin-top:20px;
+            }
+
+            th{
+              background:#0f172a;
+              color:white;
+            }
+
+            td,th{
+              border:1px solid #ddd;
+              padding:12px;
+              text-align:left;
+            }
+
+            .total{
+              text-align:right;
+              margin-top:30px;
+              font-size:28px;
+              font-weight:bold;
+            }
+
+            .totals{
+              margin-top:20px;
+            }
+
+            .totals div{
+              display:flex;
+              justify-content:space-between;
+              margin-bottom:10px;
+            }
+
+          </style>
+
+        </head>
+
+        <body>
+
+          <!-- HEADER -->
+          <div class="top">
+
+            <div>
+
+              <div class="title">
+                PREVENTIVO
+              </div>
+
+              <div class="subtitle">
+                Officina Meccanica
+              </div>
+
+              <div style="margin-top:10px;">
+                Data:
+                ${new Date(q.createdAt)
+                  .toLocaleDateString()}
+              </div>
+
+            </div>
+
+            <div>
+
+              <h2>
+                ${s.companyName || ""}
+              </h2>
+
+              <div>
+                ${s.owner || ""}
+              </div>
+
+              <div>
+                ${s.address || ""}
+              </div>
+
+              <div>
+                ${s.city || ""}
+              </div>
+
+              <div>
+                P.IVA:
+                ${s.vat || ""}
+              </div>
+
+              <div>
+                SDI:
+                ${s.sdi || ""}
+              </div>
+
+              <div>
+                PEC:
+                ${s.pec || ""}
+              </div>
+
+              <div>
+                Tel:
+                ${s.phone || ""}
+              </div>
+
+              <div>
+                ${s.email || ""}
+              </div>
+
+              <div>
+                IBAN:
+                ${s.iban || ""}
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- CLIENTE -->
+          <div class="box">
+
+            <div class="section-title">
+              Cliente
+            </div>
+
+            <div>
+              <strong>
+                ${q.client?.companyName ||
+                  q.client?.name ||
+                  ""}
+              </strong>
+            </div>
+
+            <div>
+              Referente:
+              ${q.client?.contactName || ""}
+            </div>
+
+            <div>
+              Indirizzo:
+              ${q.client?.address || ""}
+            </div>
+
+            <div>
+              Telefono:
+              ${q.client?.phone || ""}
+            </div>
+
+            <div>
+              Email:
+              ${q.client?.email || ""}
+            </div>
+
+            <div>
+              P.IVA:
+              ${q.client?.vat || ""}
+            </div>
+
+            <div>
+              Codice Fiscale:
+              ${q.client?.fiscalCode || ""}
+            </div>
+
+            <div>
+              SDI:
+              ${q.client?.sdi || ""}
+            </div>
+
+            <div>
+              PEC:
+              ${q.client?.pec || ""}
+            </div>
+
+          </div>
+
+          <!-- DESCRIZIONE -->
+          <div class="box">
+
+            <div class="section-title">
+              Descrizione lavoro
+            </div>
+
+            <div>
+              ${q.description || ""}
+            </div>
+
+          </div>
+
+          <!-- TABELLA -->
+          <table>
+
+            <thead>
+
+              <tr>
+                <th>Descrizione</th>
+                <th>Qta</th>
+                <th>Prezzo</th>
+                <th>Totale</th>
+              </tr>
+
+            </thead>
+
+            <tbody>
+
+              ${q.items.map(item => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.qty}</td>
+                  <td>€ ${item.price}</td>
+                  <td>€ ${item.total}</td>
+                </tr>
+              `).join("")}
+
+            </tbody>
+
+          </table>
+
+          <!-- TOTALI -->
+          <div class="totals">
+
+            <div>
+              <span>Subtotale</span>
+              <span>
+                € ${Number(q.subtotal).toFixed(2)}
+              </span>
+            </div>
+
+            <div>
+              <span>IVA</span>
+              <span>
+                € ${Number(q.ivaAmount).toFixed(2)}
+              </span>
+            </div>
+
+          </div>
+
+          <div class="total">
+
+            Totale:
+            € ${Number(q.total).toFixed(2)}
+
+          </div>
+
+        </body>
+
+        </html>
+      `;
+
+      const win =
+        window.open("", "_blank");
+
+      win.document.write(html);
+
+      win.document.close();
+
+      win.print();
+
+    } catch (err) {
+
+      console.log(err);
+
+      alert("Errore PDF");
+    }
+  };
+
   return (
 
     <div className="min-h-screen bg-slate-100 p-4">
@@ -269,20 +587,22 @@ export default function QuotesPage() {
 
               {/* BOTTONI */}
               <div className="flex gap-2 mt-5 flex-wrap">
-<a
-  href={`/?edit=${q.id}`}
-  className="bg-orange-500 hover:bg-orange-600 transition text-white px-4 py-3 rounded-xl font-medium"
->
-  ✏️ Modifica
-</a>
-                {/* PDF */}
+
+                {/* MODIFICA */}
                 <a
-                  href={`${API}/quotes/${q.id}/pdf`}
-                  target="_blank"
+                  href={`/?edit=${q.id}`}
+                  className="bg-orange-500 hover:bg-orange-600 transition text-white px-4 py-3 rounded-xl font-medium"
+                >
+                  ✏️ Modifica
+                </a>
+
+                {/* PDF */}
+                <button
+                  onClick={() => printQuote(q)}
                   className="bg-blue-600 hover:bg-blue-700 transition text-white px-4 py-3 rounded-xl font-medium"
                 >
                   📄 PDF
-                </a>
+                </button>
 
                 {/* ELIMINA */}
                 <button
