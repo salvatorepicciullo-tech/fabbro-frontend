@@ -1,11 +1,17 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import axios from "axios";
 
 const API = "https://fabbro-app.onrender.com";
 
 export default function Home() {
+
+  const searchParams = useSearchParams();
+
+  const editId =
+    searchParams.get("edit");
 
   const [description, setDescription] = useState("");
   const [items, setItems] = useState([]);
@@ -14,19 +20,69 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
 
   const [client, setClient] = useState({
+    id: null,
+
+    // PRIVATO / AZIENDA
     name: "",
+    companyName: "",
+    contactName: "",
+
+    vat: "",
+    fiscalCode: "",
+
+    sdi: "",
+    pec: "",
+
     phone: "",
     email: "",
+
     address: ""
   });
 
   // 🔥 CARICA MATERIALI
   useEffect(() => {
+
     axios
       .get(`${API}/price-items`)
       .then((res) => setPresetItems(res.data))
       .catch((err) => console.error(err));
+
   }, []);
+
+  // 🔥 CARICA PREVENTIVO IN MODIFICA
+  useEffect(() => {
+
+    if (!editId) return;
+
+    axios
+      .get(`${API}/quotes`)
+      .then((res) => {
+
+        const quote =
+          res.data.find(
+            (q) => q.id == editId
+          );
+
+        if (!quote) return;
+
+        setClient(quote.client);
+
+        setItems(
+          quote.items.map((i) => ({
+            ...i
+          }))
+        );
+
+        setDescription(
+          quote.description || ""
+        );
+
+        setIva(
+          quote.ivaRate || 22
+        );
+      });
+
+  }, [editId]);
 
   // ➕ AGGIUNGI RIGA
   const addItem = () => {
@@ -41,11 +97,14 @@ export default function Home() {
         type: "material"
       },
     ]);
-
   };
 
-  // ✏️ AGGIORNA RIGA
-  const updateItem = (index, field, value) => {
+  // ✏️ UPDATE RIGA
+  const updateItem = (
+    index,
+    field,
+    value
+  ) => {
 
     const newItems = [...items];
 
@@ -70,24 +129,38 @@ export default function Home() {
 
   // 💰 TOTALI
   const subtotal = items.reduce(
-    (acc, i) => acc + Number(i.total || 0),
+    (acc, i) =>
+      acc + Number(i.total || 0),
     0
   );
 
-  const ivaAmount = subtotal * (iva / 100);
+  const ivaAmount =
+    subtotal * (iva / 100);
 
-  const total = subtotal + ivaAmount;
+  const total =
+    subtotal + ivaAmount;
 
   // 💾 SALVA
   const saveQuote = async () => {
 
-    if (!client.name) {
-      alert("Inserisci nome cliente");
+    if (
+      !client.name &&
+      !client.companyName
+    ) {
+
+      alert(
+        "Inserisci cliente o azienda"
+      );
+
       return;
     }
 
     if (items.length === 0) {
-      alert("Aggiungi almeno una riga");
+
+      alert(
+        "Aggiungi almeno una riga"
+      );
+
       return;
     }
 
@@ -95,23 +168,60 @@ export default function Home() {
 
     try {
 
-      await axios.post(`${API}/quotes`, {
-        client,
-        items,
-        ivaRate: iva,
-        description
-      });
+      if (editId) {
 
-      alert("✅ Preventivo salvato!");
+        await axios.put(
+          `${API}/quotes/${editId}`,
+          {
+            client,
+            items,
+            ivaRate: iva,
+            description
+          }
+        );
+
+        alert(
+          "✅ Preventivo aggiornato!"
+        );
+
+      } else {
+
+        await axios.post(
+          `${API}/quotes`,
+          {
+            client,
+            items,
+            ivaRate: iva,
+            description
+          }
+        );
+
+        alert(
+          "✅ Preventivo salvato!"
+        );
+      }
 
       // RESET
       setItems([]);
+
       setDescription("");
 
       setClient({
+        id: null,
+
         name: "",
+        companyName: "",
+        contactName: "",
+
+        vat: "",
+        fiscalCode: "",
+
+        sdi: "",
+        pec: "",
+
         phone: "",
         email: "",
+
         address: ""
       });
 
@@ -119,7 +229,9 @@ export default function Home() {
 
       console.error(err);
 
-      alert("❌ Errore salvataggio");
+      alert(
+        "❌ Errore salvataggio"
+      );
     }
 
     setLoading(false);
@@ -131,67 +243,71 @@ export default function Home() {
 
       <div className="max-w-5xl mx-auto">
 
-  {/* HEADER */}
-<div className="bg-white rounded-3xl shadow-lg p-5 mb-5">
+        {/* HEADER */}
+        <div className="bg-white rounded-3xl shadow-lg p-5 mb-5">
 
-  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-    {/* LOGO + TITOLO */}
-    <div className="flex items-center gap-4">
+            {/* LOGO */}
+            <div className="flex items-center gap-4">
 
-      <img
-        src="/logo.png"
-        alt="Logo"
-        className="w-20 h-20 object-contain"
-      />
+              <img
+                src="/logo.png"
+                alt="Logo"
+                className="w-20 h-20 object-contain"
+              />
 
-      <div>
-        <h1 className="text-3xl md:text-4xl font-black text-slate-800">
-          Preventivo Fabbro
-        </h1>
+              <div>
 
-        <p className="text-slate-500 text-sm">
-          Gestionale Officina Meccanica
-        </p>
-      </div>
+                <h1 className="text-3xl md:text-4xl font-black text-slate-800">
+                  {editId
+                    ? "✏️ Modifica Preventivo"
+                    : "Preventivo Fabbro"}
+                </h1>
 
-    </div>
+                <p className="text-slate-500 text-sm">
+                  Gestionale Officina Meccanica
+                </p>
 
-    {/* MENU */}
-    <div className="flex gap-2 flex-wrap">
+              </div>
 
-      <a
-        href="/quotes"
-        className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
-      >
-        📊 Preventivi
-      </a>
+            </div>
 
-      <a
-        href="/materials"
-        className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
-      >
-        ⚙️ Materiali
-      </a>
+            {/* MENU */}
+            <div className="flex gap-2 flex-wrap">
 
-      <a
-        href="/settings"
-        className="bg-blue-600 hover:bg-blue-700 text-white transition px-4 py-3 rounded-xl font-medium"
-      >
-        🏢 Ditta
-      </a>
+              <a
+                href="/quotes"
+                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
+              >
+                📊 Preventivi
+              </a>
 
-    </div>
+              <a
+                href="/materials"
+                className="bg-slate-100 hover:bg-slate-200 transition px-4 py-3 rounded-xl font-medium"
+              >
+                ⚙️ Materiali
+              </a>
 
-  </div>
+              <a
+                href="/settings"
+                className="bg-blue-600 hover:bg-blue-700 text-white transition px-4 py-3 rounded-xl font-medium"
+              >
+                🏢 Ditta
+              </a>
 
-</div>
+            </div>
+
+          </div>
+
+        </div>
 
         {/* CLIENTE */}
         <div className="bg-white rounded-2xl shadow p-4 mb-4">
 
           <h2 className="font-bold text-xl mb-3">
-            👤 Cliente
+            👤 Cliente / Azienda
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -209,13 +325,89 @@ export default function Home() {
             />
 
             <input
+              placeholder="Ragione sociale"
+              className="border p-3 rounded-lg"
+              value={client.companyName}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  companyName:
+                    e.target.value
+                })
+              }
+            />
+
+            <input
+              placeholder="Referente"
+              className="border p-3 rounded-lg"
+              value={client.contactName}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  contactName:
+                    e.target.value
+                })
+              }
+            />
+
+            <input
+              placeholder="Partita IVA"
+              className="border p-3 rounded-lg"
+              value={client.vat}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  vat: e.target.value
+                })
+              }
+            />
+
+            <input
+              placeholder="Codice Fiscale"
+              className="border p-3 rounded-lg"
+              value={client.fiscalCode}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  fiscalCode:
+                    e.target.value
+                })
+              }
+            />
+
+            <input
+              placeholder="Codice SDI"
+              className="border p-3 rounded-lg"
+              value={client.sdi}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  sdi: e.target.value
+                })
+              }
+            />
+
+            <input
+              placeholder="PEC"
+              className="border p-3 rounded-lg"
+              value={client.pec}
+              onChange={(e) =>
+                setClient({
+                  ...client,
+                  pec: e.target.value
+                })
+              }
+            />
+
+            <input
               placeholder="Telefono"
               className="border p-3 rounded-lg"
               value={client.phone}
               onChange={(e) =>
                 setClient({
                   ...client,
-                  phone: e.target.value
+                  phone:
+                    e.target.value
                 })
               }
             />
@@ -227,7 +419,8 @@ export default function Home() {
               onChange={(e) =>
                 setClient({
                   ...client,
-                  email: e.target.value
+                  email:
+                    e.target.value
                 })
               }
             />
@@ -239,7 +432,8 @@ export default function Home() {
               onChange={(e) =>
                 setClient({
                   ...client,
-                  address: e.target.value
+                  address:
+                    e.target.value
                 })
               }
             />
@@ -251,7 +445,9 @@ export default function Home() {
             className="border p-3 rounded-lg w-full mt-3"
             value={description}
             onChange={(e) =>
-              setDescription(e.target.value)
+              setDescription(
+                e.target.value
+              )
             }
           />
 
@@ -293,7 +489,9 @@ export default function Home() {
 
                       const selected =
                         presetItems.find(
-                          (p) => p.id == e.target.value
+                          (p) =>
+                            p.id ==
+                            e.target.value
                         );
 
                       if (selected) {
@@ -364,12 +562,16 @@ export default function Home() {
 
                   {/* TOTALE */}
                   <div className="bg-gray-100 rounded-lg p-3 flex items-center justify-center font-bold">
-                    € {Number(item.total).toFixed(2)}
+                    €
+                    {" "}
+                    {Number(item.total).toFixed(2)}
                   </div>
 
-                  {/* ELIMINA */}
+                  {/* DELETE */}
                   <button
-                    onClick={() => removeItem(i)}
+                    onClick={() =>
+                      removeItem(i)
+                    }
                     className="bg-red-500 text-white rounded-lg p-3"
                   >
                     Elimina
@@ -396,8 +598,11 @@ export default function Home() {
 
             <div className="flex justify-between">
               <span>Subtotale</span>
+
               <span>
-                € {subtotal.toFixed(2)}
+                €
+                {" "}
+                {subtotal.toFixed(2)}
               </span>
             </div>
 
@@ -409,7 +614,9 @@ export default function Home() {
                 className="border p-2 rounded-lg"
                 value={iva}
                 onChange={(e) =>
-                  setIva(+e.target.value)
+                  setIva(
+                    +e.target.value
+                  )
                 }
               >
 
@@ -430,24 +637,34 @@ export default function Home() {
             </div>
 
             <div className="flex justify-between">
+
               <span>Importo IVA</span>
+
               <span>
-                € {ivaAmount.toFixed(2)}
+                €
+                {" "}
+                {ivaAmount.toFixed(2)}
               </span>
+
             </div>
 
             <div className="flex justify-between text-2xl font-bold border-t pt-3">
+
               <span>Totale</span>
+
               <span>
-                € {total.toFixed(2)}
+                €
+                {" "}
+                {total.toFixed(2)}
               </span>
+
             </div>
 
           </div>
 
         </div>
 
-        {/* SALVA */}
+        {/* SAVE */}
         <button
           onClick={saveQuote}
           disabled={loading}
@@ -456,6 +673,8 @@ export default function Home() {
 
           {loading
             ? "Salvataggio..."
+            : editId
+            ? "💾 Aggiorna Preventivo"
             : "💾 Salva Preventivo"}
 
         </button>
