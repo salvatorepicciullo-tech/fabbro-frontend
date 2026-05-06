@@ -6,6 +6,7 @@ import axios from "axios";
 const API = "https://fabbro-app.onrender.com";
 
 export default function Home() {
+
   const [description, setDescription] = useState("");
   const [items, setItems] = useState([]);
   const [presetItems, setPresetItems] = useState([]);
@@ -29,6 +30,7 @@ export default function Home() {
 
   // ➕ AGGIUNGI RIGA
   const addItem = () => {
+
     setItems([
       ...items,
       {
@@ -39,10 +41,12 @@ export default function Home() {
         type: "material"
       },
     ]);
+
   };
 
   // ✏️ AGGIORNA RIGA
   const updateItem = (index, field, value) => {
+
     const newItems = [...items];
 
     newItems[index][field] = value;
@@ -54,13 +58,24 @@ export default function Home() {
     setItems(newItems);
   };
 
-  // 💰 CALCOLI
+  // ❌ ELIMINA RIGA
+  const removeItem = (index) => {
+
+    const newItems = [...items];
+
+    newItems.splice(index, 1);
+
+    setItems(newItems);
+  };
+
+  // 💰 TOTALI
   const subtotal = items.reduce(
     (acc, i) => acc + Number(i.total || 0),
     0
   );
 
   const ivaAmount = subtotal * (iva / 100);
+
   const total = subtotal + ivaAmount;
 
   // 💾 SALVA
@@ -101,11 +116,8 @@ export default function Home() {
       });
 
     } catch (err) {
-      console.error(err);
 
-      if (err.response) {
-        console.log(err.response.data);
-      }
+      console.error(err);
 
       alert("❌ Errore salvataggio");
     }
@@ -114,6 +126,7 @@ export default function Home() {
   };
 
   return (
+
     <div className="min-h-screen bg-gray-100 p-4">
 
       <div className="max-w-5xl mx-auto">
@@ -142,6 +155,7 @@ export default function Home() {
             </a>
 
           </div>
+
         </div>
 
         {/* CLIENTE */}
@@ -214,7 +228,7 @@ export default function Home() {
 
         </div>
 
-        {/* RIGHE */}
+        {/* MATERIALI */}
         <div className="bg-white rounded-2xl shadow p-4 mb-4">
 
           <div className="flex items-center justify-between mb-4">
@@ -235,13 +249,15 @@ export default function Home() {
           <div className="space-y-3">
 
             {items.map((item, i) => (
+
               <div
                 key={i}
                 className="border rounded-xl p-3"
               >
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
 
+                  {/* SELECT */}
                   <select
                     className="border p-3 rounded-lg"
                     onChange={(e) => {
@@ -252,8 +268,18 @@ export default function Home() {
                         );
 
                       if (selected) {
-                        updateItem(i, "name", selected.name);
-                        updateItem(i, "price", selected.price);
+
+                        updateItem(
+                          i,
+                          "name",
+                          selected.name
+                        );
+
+                        updateItem(
+                          i,
+                          "price",
+                          selected.price
+                        );
                       }
                     }}
                   >
@@ -263,16 +289,21 @@ export default function Home() {
                     </option>
 
                     {presetItems.map((p) => (
+
                       <option
                         key={p.id}
                         value={p.id}
                       >
-                        {p.name} (€{p.price}/{p.unit})
+                        {p.name}
+                        {" "}
+                        (€{p.price}/{p.unit})
                       </option>
+
                     ))}
 
                   </select>
 
+                  {/* QTA */}
                   <input
                     type="number"
                     placeholder="Quantità"
@@ -287,6 +318,7 @@ export default function Home() {
                     }
                   />
 
+                  {/* PREZZO */}
                   <input
                     type="number"
                     placeholder="Prezzo"
@@ -301,13 +333,23 @@ export default function Home() {
                     }
                   />
 
+                  {/* TOTALE */}
                   <div className="bg-gray-100 rounded-lg p-3 flex items-center justify-center font-bold">
                     € {Number(item.total).toFixed(2)}
                   </div>
 
+                  {/* ELIMINA */}
+                  <button
+                    onClick={() => removeItem(i)}
+                    className="bg-red-500 text-white rounded-lg p-3"
+                  >
+                    Elimina
+                  </button>
+
                 </div>
 
               </div>
+
             ))}
 
           </div>
@@ -325,7 +367,9 @@ export default function Home() {
 
             <div className="flex justify-between">
               <span>Subtotale</span>
-              <span>€ {subtotal.toFixed(2)}</span>
+              <span>
+                € {subtotal.toFixed(2)}
+              </span>
             </div>
 
             <div className="flex justify-between items-center">
@@ -339,6 +383,7 @@ export default function Home() {
                   setIva(+e.target.value)
                 }
               >
+
                 <option value={22}>
                   IVA 22%
                 </option>
@@ -350,6 +395,7 @@ export default function Home() {
                 <option value={0}>
                   IVA 0%
                 </option>
+
               </select>
 
             </div>
@@ -378,9 +424,11 @@ export default function Home() {
           disabled={loading}
           className="w-full bg-green-600 text-white p-4 rounded-2xl text-xl font-bold"
         >
+
           {loading
             ? "Salvataggio..."
             : "💾 Salva Preventivo"}
+
         </button>
 
       </div>
